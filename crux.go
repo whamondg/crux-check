@@ -10,6 +10,12 @@ import (
 	"os"
 )
 
+type CliArgs struct {
+	apiKey  string
+	url     string
+	verbose bool
+}
+
 type CruxRecord struct {
 	Record struct {
 		Metrics struct {
@@ -58,24 +64,31 @@ func getCruxData(apiKey string, target string, verbose bool) (CruxRecord, error)
 		if jsonErr != nil {
 			return cruxRecord, fmt.Errorf("JSON Unmarshalling failed with error %s", err)
 		}
+
+		if verbose {
+			fmt.Printf("Parsed JSON into Structs\n")
+			fmt.Printf("%+v\n", cruxRecord)
+		}
+
 		return cruxRecord, nil
 	}
 }
 
-func assessMetric(name string, metric Metric) {
-	// fmt.Printf("%+v\n", metric)
+func assessMetric(metric Metric) (bool, error) {
+	p75Num, err := metric.Percentiles.P75.Float64()
+	if err != nil {
+		return false, fmt.Errorf("Failed to convert p75 value of %s to float64: %s", metric.Percentiles.P75, err)
+	}
 
-	p75 := metric.Percentiles.P75
-	threshold := metric.Histogram[0].End
-	var result = "fail"
-	// if (p75.Float64()) < (target.Float64()) {
-	// 	result = "pass"
-	// }
+	thresholdNum, err := metric.Histogram[0].End.Float64()
+	if err != nil {
+		return false, fmt.Errorf("Failed to convert threshold value of %s to float64: %s", metric.Histogram[0].End, err)
+	}
 
-	fmt.Printf("%7s: %5v %10v %7s\n", name, p75, threshold, result)
+	return p75Num < thresholdNum, nil
 }
 
-func main() {
+func readArgs() CliArgs {
 	apiKey := os.Getenv("CRUX_API_KEY")
 	if len(apiKey) == 0 {
 		fmt.Fprintf(os.Stderr, "No API key defined: set the CRUX_API_KEY environment variable\n")
@@ -99,19 +112,54 @@ func main() {
 		}
 	}
 
-	cruxRecord, err := getCruxData(apiKey, *url, *verbose)
+	return CliArgs{apiKey: apiKey, url: *url, verbose: *verbose}
+}
+
+func main() {
+	args := readArgs()
+
+	var cruxRecord CruxRecord
+	var err error
+
+	cruxRecord, err = getCruxData(args.apiKey, args.url, args.verbose)
 	if err != nil {
 		fmt.Printf("Failed to get CrUX data: %s\n", err)
-	}
-
-	if *verbose {
-		fmt.Printf("Parsed JSON into Structs\n")
-		fmt.Printf("%+v\n", cruxRecord)
+		os.Exit(1)
 	}
 
 	fmt.Println()
-	fmt.Printf("%7s: %5v %10v %7s\n", "Metric", "P75", "Threshold", "Status")
-	assessMetric("CLS", cruxRecord.Record.Metrics.CLS)
-	assessMetric("FID", cruxRecord.Record.Metrics.FID)
-	assessMetric("LCP", cruxRecord.Record.Metrics.LCP)
+	fmt.Printf("%10s: %5v %10v %7s\n", "Metric", "P75", "Threshold", "Status")
+
+	var status bool
+	status, err = assessMetric(cruxRecord.Record.Metrics.CLS)
+	if err != nil {
+		fmt.Printf("Failed to asses CLS: %s\n", err)
+		os.Exit(1)
+	}
+
+	printMetric(cruxRecord.Record.Metrics.CLS, status)
+
+	status, err = assessMetric(cruxRecord.Record.Metrics.FID)
+	if err != nil {
+		fmt.Printf("Failed to asses FID: %s\n", err)
+		os.Exit(1)
+	}
+	printMetric(cruxRecord.Record.Metrics.FID, status)
+
+	status, err = assessMetric(cruxRecord.Record.Metrics.LCP)
+	if err != nil {
+		fmt.Printf("Failed to asses LCP: %s\n", err)
+		os.Exit(1)
+	}
+
+	printMetric(cruxRecord.Record.Metrics.LCP, status)
+}
+
+func printMetric(metric Metric, status bool) {
+	var result = "fail"
+	if status {
+		result = "pass"
+	}
+
+	fmt.Printf("%10s: %5v %10v %7s\n", "CLS", metric.Percentiles.P75, metric.Histogram[0].End, result)
 }
