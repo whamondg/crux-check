@@ -30,3 +30,11 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
+brews:
+    - tap:
+          owner: <github_username>
+          name: homebrew-<repo_name>
+      folder: Formula
+      homepage: https://github.com/<github_username>/<repo_name>
+      description: "CLI for checking CrUX data."
+      
