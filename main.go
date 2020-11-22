@@ -6,20 +6,6 @@ import (
 	"os"
 )
 
-func assessMetric(metric Metric) (bool, error) {
-	p75Num, err := metric.Percentiles.P75.Float64()
-	if err != nil {
-		return false, fmt.Errorf("Failed to convert p75 value of %s to float64: %s", metric.Percentiles.P75, err)
-	}
-
-	thresholdNum, err := metric.Histogram[0].End.Float64()
-	if err != nil {
-		return false, fmt.Errorf("Failed to convert threshold value of %s to float64: %s", metric.Histogram[0].End, err)
-	}
-
-	return p75Num < thresholdNum, nil
-}
-
 /*
 MetricAssessment contains an evaluation of a CrUX measurment scored against its target threshold
 */
@@ -48,12 +34,12 @@ func metricScore(p75 json.Number, threshold json.Number) string {
 
 	if p75Num < thresholdNum {
 		return "Pass"
-	} else {
-		return "Fail"
 	}
+
+	return "Fail"
 }
 
-func createMetricAssesment(name string, metric Metric) MetricAssessment {
+func assessMetric(name string, metric Metric) MetricAssessment {
 	var p75, threshold, score string
 	if validMetric(metric) {
 		p75 = string(metric.Percentiles.P75)
@@ -65,9 +51,9 @@ func createMetricAssesment(name string, metric Metric) MetricAssessment {
 
 func assessCoreWebVitals(cruxRecord CruxRecord) []MetricAssessment {
 	return []MetricAssessment{
-		createMetricAssesment("CLS", cruxRecord.Record.Metrics.CLS),
-		createMetricAssesment("FID", cruxRecord.Record.Metrics.FID),
-		createMetricAssesment("LCP", cruxRecord.Record.Metrics.LCP),
+		assessMetric("CLS", cruxRecord.Record.Metrics.CLS),
+		assessMetric("FID", cruxRecord.Record.Metrics.FID),
+		assessMetric("LCP", cruxRecord.Record.Metrics.LCP),
 	}
 }
 
