@@ -74,6 +74,8 @@ func GetCruxData(apiKey string, target string, verbose bool) (CruxRecord, error)
 		return cruxRecord, fmt.Errorf("The HTTP request failed with error %s", err)
 	}
 
+	defer response.Body.Close()
+
 	data, _ := ioutil.ReadAll(response.Body)
 
 	if response.StatusCode != 200 {
