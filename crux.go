@@ -55,6 +55,10 @@ func getCruxData(apiKey string, target string, verbose bool) (CruxRecord, error)
 	} else {
 		data, _ := ioutil.ReadAll(response.Body)
 
+		if response.StatusCode != 200 {
+			return cruxRecord, fmt.Errorf("Received an error while fetching CrUX data\n %s", string(data))
+		}
+
 		if verbose {
 			fmt.Printf("Received CrUX data\n")
 			fmt.Println(string(data))
