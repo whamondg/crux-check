@@ -83,8 +83,17 @@ func main() {
 	metricResults := assessCoreWebVitals(cruxRecord)
 
 	fmt.Println()
+
 	fmt.Printf("%10s: %5v %10v %7s\n", "Metric", "P75", "Threshold", "Status")
 	for _, val := range metricResults {
-		fmt.Printf("%10s: %5v %10v %7s\n", val.name, val.p75, val.threshold, val.score)
+		var scoreColour = FailColour
+		if val.score == "Pass" {
+			scoreColour = PassColour
+		}
+
+		fmt.Printf(Colourise("%10s:", ""), val.name)
+		fmt.Printf(Colourise("%6v", ""), val.p75)
+		fmt.Printf(Colourise("%10v", ""), val.threshold)
+		fmt.Printf(Colourise("%8s\n", scoreColour), val.score)
 	}
 }
