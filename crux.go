@@ -3,18 +3,11 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
 )
-
-type CliArgs struct {
-	apiKey  string
-	url     string
-	verbose bool
-}
 
 type CruxRecord struct {
 	Record struct {
@@ -92,35 +85,8 @@ func assessMetric(metric Metric) (bool, error) {
 	return p75Num < thresholdNum, nil
 }
 
-func readArgs() CliArgs {
-	apiKey := os.Getenv("CRUX_API_KEY")
-	if len(apiKey) == 0 {
-		fmt.Fprintf(os.Stderr, "No API key defined: set the CRUX_API_KEY environment variable\n")
-		os.Exit(1)
-	}
-
-	url := flag.String("u", "", "A URL which will be used to find CrUX data")
-	verbose := flag.Bool("v", false, "Enable verbose logging")
-	required := []string{"u"}
-
-	flag.Parse()
-
-	seen := make(map[string]bool)
-	flag.Visit(func(f *flag.Flag) { seen[f.Name] = true })
-
-	for _, req := range required {
-		if !seen[req] {
-			fmt.Fprintf(os.Stderr, "mandatory -%s flag is missing\n\n", req)
-			flag.Usage()
-			os.Exit(1)
-		}
-	}
-
-	return CliArgs{apiKey: apiKey, url: *url, verbose: *verbose}
-}
-
 func main() {
-	args := readArgs()
+	args := ReadArgs()
 
 	var cruxRecord CruxRecord
 	var err error
