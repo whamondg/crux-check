@@ -40,4 +40,4 @@ brews:
       tap:
           owner: whamondg
           name: homebrew-crux-check
-          token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+          
