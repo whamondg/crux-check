@@ -11,7 +11,7 @@ Config is a struct for storing runtime configuration
 */
 type Config struct {
 	apiKey  string
-	url     string
+	urls    []string
 	verbose bool
 }
 
@@ -42,5 +42,5 @@ func ReadConfig() Config {
 		}
 	}
 
-	return Config{apiKey: apiKey, url: *url, verbose: *verbose}
+	return Config{apiKey: apiKey, urls: []string{*url}, verbose: *verbose}
 }

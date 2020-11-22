@@ -5,8 +5,8 @@ import (
 	"os"
 )
 
-func analyseURL(config Config) {
-	cruxRecord, err := GetCruxData(config.apiKey, config.url, config.verbose)
+func analyseURL(url string, config Config) {
+	cruxRecord, err := GetCruxData(config.apiKey, url, config.verbose)
 	if err != nil {
 		fmt.Printf("Failed to get CrUX data: %s\n", err)
 		os.Exit(1)
@@ -36,6 +36,7 @@ func analyseURL(config Config) {
 
 func main() {
 	config := ReadConfig()
-
-	analyseURL(config)
+	for _, url := range config.urls {
+		analyseURL(url, config)
+	}
 }
