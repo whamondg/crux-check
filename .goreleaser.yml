@@ -31,9 +31,13 @@ changelog:
       - '^docs:'
       - '^test:'
 brews:
-    - tap:
-          owner: whamondg
-          name: homebrew-crux-checker
-      folder: Formula
-      homepage: https://github.com/whamondg/homebrew-crux-checker
+    - name: crux-check
       description: "CLI for checking CrUX data."
+      folder: Formula
+      homepage: https://github.com/whamondg/homebrew-crux-check
+      test: system "#{bin}/crux-check -h"
+      install: bin.install "crux-check"
+      tap:
+          owner: whamondg
+          name: homebrew-crux-check
+          token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
