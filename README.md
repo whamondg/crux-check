@@ -12,6 +12,10 @@ Crux-check is a simple utility for checking how real-world Chrome users experien
 
 `crux-check -u https://www.example.com`
 
+Also supports a "," separated list of URLs:
+
+`crux-check -u https://www.example.com,https://www.example.com/foo`
+
 ## Releasing
 
 [Goreleaser](https://goreleaser.com) is used to build, release and publish crux-check. It can be installed on a mac via Homebrew.
