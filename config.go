@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 )
 
 /*
@@ -25,7 +26,7 @@ func ReadConfig() Config {
 		os.Exit(1)
 	}
 
-	url := flag.String("u", "", "A URL which will be used to find CrUX data")
+	urls := flag.String("u", "", "A ',' separated list of URLs to check the CrUX data for")
 	verbose := flag.Bool("v", false, "Enable verbose logging")
 	required := []string{"u"}
 
@@ -42,5 +43,5 @@ func ReadConfig() Config {
 		}
 	}
 
-	return Config{apiKey: apiKey, urls: []string{*url}, verbose: *verbose}
+	return Config{apiKey: apiKey, urls: strings.Split(*urls, ","), verbose: *verbose}
 }
