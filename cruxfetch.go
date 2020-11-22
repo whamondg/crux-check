@@ -15,6 +15,9 @@ CruxRecord represents the overall CrUX api response
 */
 type CruxRecord struct {
 	Record struct {
+		Key struct {
+			URL string `json:"url"`
+		} `json:"key"`
 		Metrics struct {
 			CLS Metric `json:"cumulative_layout_shift"`
 			FID Metric `json:"first_input_delay"`
