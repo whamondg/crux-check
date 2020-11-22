@@ -16,9 +16,9 @@ type Config struct {
 }
 
 /*
-ReadArgs parses command line arguments and looks up required environment variables.
+ReadConfig parses command line arguments and looks up required environment variables.
 */
-func ReadArgs() Config {
+func ReadConfig() Config {
 	apiKey := os.Getenv("CRUX_API_KEY")
 	if len(apiKey) == 0 {
 		fmt.Fprintf(os.Stderr, "No API key defined: set the CRUX_API_KEY environment variable\n")
