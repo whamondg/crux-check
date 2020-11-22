@@ -4,10 +4,10 @@ import "fmt"
 
 var green = "\033[32m"
 var red = "\033[31m"
-var white = "\033[97m"
+var grey = "\033[37m"
 
 //DefaultColour for terminal output
-var DefaultColour = white
+var DefaultColour = grey
 
 //PassColour indicates a good result
 var PassColour = green
