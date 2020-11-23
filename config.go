@@ -16,21 +16,22 @@ type Config struct {
 	verbose bool
 }
 
-/*
-ReadConfig parses command line arguments and looks up required environment variables.
-*/
-func ReadConfig() Config {
-	apiKey := os.Getenv("CRUX_API_KEY")
+var apiKey string
+var urls *string
+var verbose *bool
+
+func init() {
+	apiKey = os.Getenv("CRUX_API_KEY")
 	if len(apiKey) == 0 {
 		fmt.Fprintf(os.Stderr, "No API key defined: set the CRUX_API_KEY environment variable\n")
 		os.Exit(1)
 	}
 
-	urls := flag.String("u", "", "A ',' separated list of URLs to check the CrUX data for")
-	verbose := flag.Bool("v", false, "Enable verbose logging")
-	required := []string{"u"}
-
+	urls = flag.String("u", "", "A ',' separated list of URLs to check the CrUX data for")
+	verbose = flag.Bool("v", false, "Enable verbose logging")
 	flag.Parse()
+
+	required := []string{"u"}
 
 	seen := make(map[string]bool)
 	flag.Visit(func(f *flag.Flag) { seen[f.Name] = true })
@@ -42,6 +43,11 @@ func ReadConfig() Config {
 			os.Exit(1)
 		}
 	}
+}
 
+/*
+ReadConfig parses command line arguments and looks up required environment variables.
+*/
+func ReadConfig() Config {
 	return Config{apiKey: apiKey, urls: strings.Split(*urls, ","), verbose: *verbose}
 }

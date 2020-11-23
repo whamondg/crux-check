@@ -12,9 +12,31 @@ Crux-check is a simple utility for checking how real-world Chrome users experien
 
 `crux-check -u https://www.example.com`
 
+```
+https://www.example.com/
+    Metric:   P75  Threshold  Status
+       CLS:  0.04      0.10    Pass
+       FID:    21       100    Pass
+       LCP:  2022      2500    Pass
+```
+
 Also supports a "," separated list of URLs:
 
-`crux-check -u https://www.example.com,https://www.example.com/foo`
+`crux-check -u https://www.example.com,https://www.google.com`
+
+```
+https://www.example.com/
+    Metric:   P75  Threshold  Status
+       CLS:  0.04      0.10    Pass
+       FID:    21       100    Pass
+       LCP:  2022      2500    Pass
+
+https://www.google.com/
+    Metric:   P75  Threshold  Status
+       CLS:  0.04      0.10    Pass
+       FID:    26       100    Pass
+       LCP:  1862      2500    Pass
+```
 
 ## Releasing
 
