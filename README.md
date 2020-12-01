@@ -10,7 +10,7 @@ Crux-check is a simple utility for checking how real-world Chrome users experien
 ```
 ## Usage
 
-`crux-check -u https://www.example.com`
+`crux-check -u=https://www.example.com`
 
 ```
 https://www.example.com/
@@ -22,7 +22,7 @@ https://www.example.com/
 
 Also supports a "," separated list of URLs:
 
-`crux-check -u https://www.example.com,https://www.google.com`
+`crux-check -u=https://www.example.com,https://www.google.com`
 
 ```
 https://www.example.com/
